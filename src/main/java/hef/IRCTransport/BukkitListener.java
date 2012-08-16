@@ -39,10 +39,18 @@ public class BukkitListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(final AsyncPlayerChatEvent event) {
-        IrcAgent bot = this.bots.get(event.getPlayer().getEntityId());
-        if (bot != null && bot.isConnected()) {
-            bot.sendMessage(event.getMessage());
-        }
+        final IrcAgent bot = this.bots.get(event.getPlayer().getEntityId());
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            
+            @Override
+            public void run() {
+                if (bot != null && bot.isConnected()) {
+                    bot.sendMessage(event.getMessage());
+                }                
+            }
+            
+        }, 0L);
+
     }
 
     /**
