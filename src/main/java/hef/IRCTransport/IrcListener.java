@@ -160,6 +160,9 @@ public class IrcListener extends ListenerAdapter<IrcAgent> {
      */
     @Override
     public void onMessage(final MessageEvent<IrcAgent> event) {
+        if (plugin.getBots().contains(event.getBot())) {
+            return;
+        }
         String formattedMessage = plugin.getConfig().getString("messages.chat-irc");
         String channel = event.getChannel().getName();
         String sender = event.getUser().getNick();

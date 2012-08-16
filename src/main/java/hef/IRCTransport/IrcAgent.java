@@ -75,10 +75,11 @@ public class IrcAgent extends PircBotX {
         super.setAutoNickChange(true);
 
         // init player settings
-        setSettings(plugin.getDatabase().find(AgentSettings.class, player.getName()));
+        setSettings(null);
         if (null == getSettings()) {
             setSettings(new AgentSettings(player));
-            String prefix = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', plugin.getChat().getPlayerPrefix(player)));
+            String prefix = plugin.getChat().getGroupPrefix(player.getLocation().getWorld(), plugin.getChat().getPlayerGroups(player)[0]);
+            prefix = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', prefix)).replaceAll(" ", "");
             String suffix = plugin.getConfig().getString("default.suffix", "");
             int ircnicksize = plugin.getConfig().getInt("server.nicksize", 28);
             String nick = String.format("%s%s%s", prefix, player.getName(), suffix);
