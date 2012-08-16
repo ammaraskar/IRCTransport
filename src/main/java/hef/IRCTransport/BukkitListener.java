@@ -41,8 +41,7 @@ public class BukkitListener implements Listener {
     public void onPlayerChat(final AsyncPlayerChatEvent event) {
         IrcAgent bot = this.bots.get(event.getPlayer().getEntityId());
         if (bot != null && bot.isConnected()) {
-            String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
-            bot.sendMessage(message);
+            bot.sendMessage(event.getMessage());
         }
     }
 

@@ -76,9 +76,9 @@ public class IrcAgent extends PircBotX {
         setSettings(plugin.getDatabase().find(AgentSettings.class, player.getName()));
         if (null == getSettings()) {
             setSettings(new AgentSettings(player));
-            String prefix = plugin.getConfig().getString("default.prefix", "");
+            String prefix = plugin.getChat().getPlayerPrefix(player);
             String suffix = plugin.getConfig().getString("default.suffix", "");
-            int ircnicksize = plugin.getConfig().getInt("server.nicksize", 15);
+            int ircnicksize = plugin.getConfig().getInt("server.nicksize", 28);
             String nick = String.format("%s%s%s", prefix, player.getName(), suffix);
             if (nick.length() > ircnicksize) {
                 nick = nick.substring(0, ircnicksize);

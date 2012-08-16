@@ -8,9 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
+
+import net.milkbowl.vault.chat.Chat;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -26,6 +30,8 @@ public class IRCTransport extends JavaPlugin {
     private BukkitListener bukkitListener;
     /** IRC event handler. */
     private IrcListener listener;
+    /** Vault chat manager. */
+    private Chat chat;
 
     /**
      * Gets the maping of Bukkit Players to IRCAgents.
@@ -95,6 +101,13 @@ public class IRCTransport extends JavaPlugin {
     public void onEnable() {
         this.bukkitListener = new BukkitListener(this);
         listener = new IrcListener(this);
+        
+        if (!this.setupChat()) {
+            this.getLogger().severe("Vault chat integration failed, shutting down");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        
         getConfig() .options().copyDefaults(true);
         PluginManager pm = getServer().getPluginManager();
         PluginDescriptionFile pdfFile = this.getDescription();
@@ -146,6 +159,13 @@ public class IRCTransport extends JavaPlugin {
     public IrcListener getListener() {
         return listener;
     }
+    
+    /**
+     * @return vault chat handler
+     */
+    public Chat getChat() {
+        return chat;
+    }
 
     /** start sending metric data to griefcraft. */
     private void startMetrics() {
@@ -155,5 +175,16 @@ public class IRCTransport extends JavaPlugin {
         } catch (IOException e) {
             LOG.log(Level.WARNING, "Failed to submit metrics");
         }
+    }
+    
+    /** setup chat for vault. */
+    private boolean setupChat()
+    {
+        RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+        if (chatProvider != null) {
+            chat = chatProvider.getProvider();
+        }
+
+        return (chat != null);
     }
 }
