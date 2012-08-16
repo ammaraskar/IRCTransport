@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.SocketFactory;
+
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.pircbotx.Channel;
 import org.pircbotx.PircBotX;
@@ -76,7 +78,7 @@ public class IrcAgent extends PircBotX {
         setSettings(plugin.getDatabase().find(AgentSettings.class, player.getName()));
         if (null == getSettings()) {
             setSettings(new AgentSettings(player));
-            String prefix = plugin.getChat().getPlayerPrefix(player);
+            String prefix = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', plugin.getChat().getPlayerPrefix(player)));
             String suffix = plugin.getConfig().getString("default.suffix", "");
             int ircnicksize = plugin.getConfig().getInt("server.nicksize", 28);
             String nick = String.format("%s%s%s", prefix, player.getName(), suffix);
