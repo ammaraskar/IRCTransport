@@ -5,9 +5,10 @@ import java.util.logging.Logger;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -36,13 +37,12 @@ public class BukkitListener implements Listener {
      * Player chat handler.  It cancels that chat event.
      * @param event the player chat event.
      */
-    @EventHandler
-    public void onPlayerChat(final PlayerChatEvent event) {
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerChat(final AsyncPlayerChatEvent event) {
         IrcAgent bot = this.bots.get(event.getPlayer().getEntityId());
-        if (null != bot && bot.isConnected()) {
-            bot.sendMessage(event.getMessage());
-            // prevent messages from being displayed twice.
-            event.setCancelled(true);
+        if (bot != null && bot.isConnected()) {
+            String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
+            bot.sendMessage(message);
         }
     }
 
